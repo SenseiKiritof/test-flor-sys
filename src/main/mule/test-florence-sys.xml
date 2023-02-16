@@ -163,11 +163,11 @@ output application/json
 (if (!payload.surname?) "" else ((if (payload.name?) ", " else "") ++ "surname = :surname") ++ "'") ++
 (if (!payload.email?) "" else ((if (payload.name? or payload.surname?) ", " else "") ++ "email = :email")) ++
 (if (!payload.address?) "" else ((if (payload.name? or payload.surname? or payload.email?) ", " else "") ++ "address = :address")) ++
-" where id = " ++ attributes.uriParams.'id']]></ee:set-payload>
+" where id = :id"]]></ee:set-payload>
             </ee:message>
         </ee:transform>
         <db:update doc:name="Update" doc:id="6150d60f-314a-41af-a2a8-f7edf2cc39e0" config-ref="Database_Config">
-            <db:sql><![CDATA[#[payload]]]></db:sql>
+            <db:sql><![CDATA[#[payload]	]]></db:sql>
             <db:input-parameters><![CDATA[#[{id: attributes.uriParams.'id', name: vars.payload.name, surname: vars.payload.surname, email: vars.payload.email, address: vars.payload.address}]]]></db:input-parameters>
         </db:update>
         <ee:transform>
@@ -181,7 +181,7 @@ output application/json
         <db:select doc:name="Select" doc:id="9fcdd467-0b50-4207-a6e0-ed999837e3f1" config-ref="Database_Config">
             <db:sql><![CDATA[select * from user
 where (:name is null or name like concat("%", :name, "%"))
-and (:surname is null or name like concat("%", :surname, "%"))]]></db:sql>
+and (:surname is null or surname like concat("%", :surname, "%"))]]></db:sql>
             <db:input-parameters><![CDATA[#[{name: attributes.queryParams.name, surname: attributes.queryParams.surname}]]]></db:input-parameters>
         </db:select>
         <ee:transform doc:id="75b340ba-12e2-483c-8360-e541f911eb81">
