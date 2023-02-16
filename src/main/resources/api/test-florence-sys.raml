@@ -2,7 +2,7 @@
 title: test-florence-sys
 
 uses:
-  lib-types: exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/test-florence-lib.raml
+  lib-types: exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/test-florence-lib.raml
 
 /user:
   get:
@@ -18,12 +18,12 @@ uses:
         body:
           application/json:
             type: array
-            examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userList.raml
+            examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/entitiesExample/userList.raml
   post:
     body:
       application/json:
         type: lib-types.User
-        examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userInsert.raml
+        examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/entitiesExample/userInsert.raml
     responses:
       201:
         body:
@@ -37,12 +37,12 @@ uses:
           body:
             application/json:
               type: lib-types.User
-              examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/user.raml
+              examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/entitiesExample/user.raml
     patch:
       body:
         application/json:
           type: lib-types.UserPatch
-          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userPatch.raml
+          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/entitiesExample/userPatch.raml
       responses:
         204:
           body:
@@ -53,7 +53,7 @@ uses:
       body:
         application/json:
           type: lib-types.User
-          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/user.raml
+          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.5/entitiesExample/user.raml
       responses:
         204:
           body:
