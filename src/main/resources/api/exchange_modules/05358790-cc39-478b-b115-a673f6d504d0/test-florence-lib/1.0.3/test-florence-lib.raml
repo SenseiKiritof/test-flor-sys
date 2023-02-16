@@ -1,0 +1,10 @@
+#%RAML 1.0 Library
+types:
+  User: !include entities/user.raml
+  UserPatch: !include entities/userPatch.raml
+
+traits:
+  UserInsert: !include entitiesExample/userInsert.raml
+  UserPatch: !include entitiesExample/userPatch.raml
+  User: !include entitiesExample/user.raml
+  UserList: !include entitiesExample/userList.raml

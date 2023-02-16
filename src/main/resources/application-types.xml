@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="user" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    id:
+      type: number
+      required: false
+    name: string
+    surname:
+      type: string
+      required: false
+    email:
+      type: string
+      required: false
+    address:
+      type: string
+      required: false]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#75b340ba-12e2-483c-8360-e541f911eb81">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="user"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#8057ea4f-e4c4-4048-9596-92a0c41bb4f9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="user"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4dd6f559-c3d7-45cc-918a-f3201918918b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="user"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d8878a8d-6ff5-4ed9-9cc7-fdfa59ddd453">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="user"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

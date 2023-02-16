@@ -1,0 +1,69 @@
+#%RAML 1.0
+title: test-florence-sys
+
+uses:
+  lib-types: exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/test-florence-lib.raml
+
+/user:
+  get:
+    queryParameters:
+      name:
+        type: string
+        required: false
+      surname:
+        type: string
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            type: array
+            examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userList.raml
+  post:
+    body:
+      application/json:
+        type: lib-types.User
+        examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userInsert.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: string
+            default: "Utente inserito correttamente"
+  /{id}:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: lib-types.User
+              examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/user.raml
+    patch:
+      body:
+        application/json:
+          type: lib-types.UserPatch
+          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/userPatch.raml
+      responses:
+        204:
+          body:
+            application/json:
+              type: string
+              default: "Utente aggiornato correttamente"
+    put:
+      body:
+        application/json:
+          type: lib-types.User
+          examples: !include exchange_modules/05358790-cc39-478b-b115-a673f6d504d0/test-florence-lib/1.0.3/entitiesExample/user.raml
+      responses:
+        204:
+          body:
+            application/json:
+              type: string
+              default: "Utente aggiornato correttamente"
+    delete:
+      responses:
+        204:
+          body:
+            application/json:
+              type: string
+              default: "Utente eliminato correttamente"

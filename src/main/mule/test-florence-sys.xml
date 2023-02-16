@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <http:listener-config name="test-florence-sys-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="test-florence-sys-config" api="test-florence-sys.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="725b794d-6469-4513-9a5a-aa28c1ad1929" file="config-${env}.yaml" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="0a499dd0-ffb1-4dbb-a18e-2ee9692e53cf" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="testflorence"/>
+	</db:config>
+	<flow name="test-florence-sys-main">
+        <http:listener config-ref="test-florence-sys-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="test-florence-sys-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="test-florence-sys-console">
+        <http:listener config-ref="test-florence-sys-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="test-florence-sys-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="put:\user\(id):application\json:test-florence-sys-config" doc:id="d8878a8d-6ff5-4ed9-9cc7-fdfa59ddd453">
+		<db:update doc:name="Update" doc:id="5f159f8e-3b7b-4eac-bac3-dd17f9017bc2" config-ref="Database_Config">
+			<db:sql ><![CDATA[update user set name = :name, surname = :surname, email = :email, address = :address where id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{id: attributes.uriParams.'id', name: payload.name, surname: payload.surname, email: payload.email, address: payload.address}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="put:\user\(id):application\json:test-florence-sys-config" />
+    </flow>
+    <flow name="delete:\user\(id):test-florence-sys-config">
+        <db:delete doc:name="Delete" doc:id="79711e54-5250-49d3-a232-9a8130a67bd7" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from user where id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{id: attributes.uriParams.'id'}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="delete:\user\(id):test-florence-sys-config" />
+    </flow>
+    <flow name="patch:\user\(id):application\json:test-florence-sys-config" doc:id="ef99c0a9-1a19-4183-bcc2-f07d8575c66d">
+		<set-variable value='#[payload]' doc:name="Set payload" doc:id="6debe676-2069-4d2b-b9ac-5d910b871e03" variableName="payload"/>
+		<ee:transform doc:name="Transform Message" doc:id="8057ea4f-e4c4-4048-9596-92a0c41bb4f9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"update user set " ++
+(if (!payload.name?) "" else ("name = :name")) ++
+(if (!payload.surname?) "" else ((if (payload.name?) ", " else "") ++ "surname = :surname") ++ "'") ++
+(if (!payload.email?) "" else ((if (payload.name? or payload.surname?) ", " else "") ++ "email = :email")) ++
+(if (!payload.address?) "" else ((if (payload.name? or payload.surname? or payload.email?) ", " else "") ++ "address = :address")) ++
+" where id = " ++ attributes.uriParams.'id']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="Update" doc:id="6150d60f-314a-41af-a2a8-f7edf2cc39e0" config-ref="Database_Config">
+			<db:sql ><![CDATA[#[payload]]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{id: attributes.uriParams.'id', name: vars.payload.name, surname: vars.payload.surname, email: vars.payload.email, address: vars.payload.address}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="INFO" message="patch:\user\(id):application\json:test-florence-sys-config" />
+    </flow>
+    <flow name="get:\user:test-florence-sys-config">
+		<db:select doc:name="Select" doc:id="9fcdd467-0b50-4207-a6e0-ed999837e3f1" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from user
+where (:name is null or name like concat("%", :name, "%"))
+and (:surname is null or name like concat("%", :surname, "%"))]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{name: attributes.queryParams.name, surname: attributes.queryParams.surname}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:id="75b340ba-12e2-483c-8360-e541f911eb81">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload
+//[
+//  {
+//    id: 1,
+//    name: "Mario",
+//    surname: "Rossi",
+//    email: "mariorossi@test.test",
+//    address: "Via Mario 1, Roma"
+//  }, 
+//  {
+//    id: 2,
+//    name: "Maria",
+//    surname: "Rossi",
+//    email: "mariarossi@test.test",
+//    address: "Via Maria 1, Roma"
+//  }
+//]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\user\(id):test-florence-sys-config">
+        <db:select doc:name="Select" doc:id="4dd6f559-c3d7-45cc-918a-f3201918918b" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from user where id = :id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{id: attributes.uriParams.'id'}]]]></db:input-parameters>
+		</db:select>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload[0]
+//{
+//  id: 1,
+//  name: "Mario",
+//  surname: "Rossi",
+//  email: "mariorossi@test.test",
+//  address: "Via Mario 1, Roma"
+//}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\user:application\json:test-florence-sys-config">
+        <db:insert doc:name="Insert" doc:id="c9de1d04-be10-4528-8e51-15ba5f83b0ec" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into user (name, surname, email, address) values (:name, :surname, :email, :address)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{name: payload.name, surname: payload.surname, email: payload.email, address: payload.address}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" message="post:\user:application\json:test-florence-sys-config" />
+    </flow>
+</mule>
