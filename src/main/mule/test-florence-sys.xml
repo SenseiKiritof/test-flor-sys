@@ -190,22 +190,7 @@ and (:surname is null or surname like concat("%", :surname, "%"))]]></db:sql>
 output application/json
 ---
 payload
-//[
-//  {
-//    id: 1,
-//    name: "Mario",
-//    surname: "Rossi",
-//    email: "mariorossi@test.test",
-//    address: "Via Mario 1, Roma"
-//  }, 
-//  {
-//    id: 2,
-//    name: "Maria",
-//    surname: "Rossi",
-//    email: "mariarossi@test.test",
-//    address: "Via Maria 1, Roma"
-//  }
-//]]]></ee:set-payload>
+]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
@@ -219,14 +204,7 @@ payload
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-payload[0]
-//{
-//  id: 1,
-//  name: "Mario",
-//  surname: "Rossi",
-//  email: "mariorossi@test.test",
-//  address: "Via Mario 1, Roma"
-//}]]></ee:set-payload>
+payload[0]]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
